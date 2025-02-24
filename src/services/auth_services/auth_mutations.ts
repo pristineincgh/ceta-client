@@ -22,7 +22,14 @@ export const useLoginUser = () => {
       try {
         await createSession(data);
         setSession(data);
-        router.push("/dashboard");
+
+        // redirect based on user role
+        if (data.user.role === "admin" || data.user.role === "superadmin") {
+          router.push("/admin");
+        } else {
+          router.push("/agent");
+        }
+
         toast.success("Login successful");
       } catch (error) {
         toast.error("Failed to login");
@@ -32,6 +39,7 @@ export const useLoginUser = () => {
     onError: (error) => {
       if (error instanceof AxiosError && error.response) {
         toast.error(error.response.data.detail);
+
         const shouldResetPassword =
           error.response.headers["x-password-reset"] === "true";
 
